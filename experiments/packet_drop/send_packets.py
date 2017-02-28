@@ -34,8 +34,7 @@ def main():
     start_time = datetime.now()
     timestamps = []
     while millis(start_time) < seconds*1000:
-        packet = arp.create_arp_packet(interface,
-                                       src_mac,
+        packet = arp.create_arp_packet(src_mac,
                                        src_ip,
                                        dest_mac,
                                        dest_ip,

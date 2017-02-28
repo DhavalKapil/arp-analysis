@@ -3,8 +3,7 @@ from scapy.all import *
 ARP_REQUEST = ARP.who_has
 ARP_REPLY = ARP.is_at
 
-def create_arp_packet(interface,
-                      src_mac,
+def create_arp_packet(src_mac,
                       src_ip,
                       dest_mac,
                       dest_ip,
@@ -16,7 +15,6 @@ def create_arp_packet(interface,
     ether.type = 0x806 # ARP protocol
 
     # Creating arp packet structure
-    # Presently only for ethx interface (TODO)
     arp = ARP()
     arp.hwtype = 1
     arp.ptype = 0x800 # IP protocol
