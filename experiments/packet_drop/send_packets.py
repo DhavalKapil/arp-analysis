@@ -49,7 +49,7 @@ def main():
     pp.plot(timestamps, len(timestamps)*[1], "x")
     pp.savefig('send_packets_output.png')
 
-    print "%d packets send" % (len(timestamps))
+    print "%d packets send" % len(timestamps)
 
 if __name__ == '__main__':
     main()

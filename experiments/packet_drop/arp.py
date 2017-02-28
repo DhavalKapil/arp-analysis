@@ -32,3 +32,10 @@ def create_arp_packet(interface,
 
 def send_arp_packet(packet):
     sendp(packet)
+
+def sniff_arp_packets(callback,
+                      timeout):
+    sniff(prn=callback,
+          timeout=timeout,
+          filter="arp",
+          store=0)
