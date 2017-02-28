@@ -5,7 +5,7 @@ from datetime import datetime
 import random
 import matplotlib.pyplot as pp
 
-import arp
+from lib import arp
 
 def usage():
     print "Usage:"

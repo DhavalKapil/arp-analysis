@@ -5,7 +5,7 @@ from datetime import datetime
 import matplotlib.pyplot as pp
 from scapy.all import *
 
-import arp
+from lib import arp
 
 def usage():
     print "Usage:"
