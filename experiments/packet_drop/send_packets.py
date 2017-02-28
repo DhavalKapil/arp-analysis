@@ -1,13 +1,21 @@
 import netifaces
 import sys
 import time
+from datetime import datetime
 import random
+import matplotlib.pyplot as pp
 
 import arp
 
 def usage():
     print "Usage:"
     print "%s [interface] [dest_mac] [dest_ip] [time(seconds)]" % (sys.argv[0])
+
+def millis(start_time):
+    """Returns milliseconds elapsed since start_time"""
+    dt = datetime.now() - start_time
+    ms = (dt.days * 24 * 60 * 60 + dt.seconds) * 1000 + dt.microseconds / 1000.0
+    return ms
 
 def main():
     if len(sys.argv) != 5:
@@ -23,8 +31,9 @@ def main():
     src_mac = addresses[netifaces.AF_LINK][0]['addr']
     src_ip = addresses[netifaces.AF_INET][0]['addr']
 
-    start_time = time.time()
-    while time.time() < (start_time + seconds):
+    start_time = datetime.now()
+    timestamps = []
+    while millis(start_time) < seconds*1000:
         packet = arp.create_arp_packet(interface,
                                        src_mac,
                                        src_ip,
@@ -32,9 +41,15 @@ def main():
                                        dest_ip,
                                        arp.ARP_REQUEST)
         arp.send_arp_packet(packet)
+        timestamps.append(millis(start_time))
 
         # Sleep for a random amount of time
         time.sleep(random.uniform(0, 2.0))
+
+    pp.plot(timestamps, len(timestamps)*[1], "x")
+    pp.savefig('send_packets_output.png')
+
+    print "%d packets send" % (len(timestamps))
 
 if __name__ == '__main__':
     main()
