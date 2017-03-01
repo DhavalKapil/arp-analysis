@@ -2,14 +2,17 @@ import netifaces
 import sys
 import time
 from datetime import datetime
-import matplotlib.pyplot as pp
 from scapy.all import *
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as pp
 
 from lib import arp
 
 def usage():
     print "Usage:"
-    print "%s [interface] [dest_ip] [dest_max] [time(seconds)]" % (sys.argv[0])
+    print "%s [interface] [dest_mac] [dest_ip] [time(seconds)]" % (sys.argv[0])
 
 def millis(start_time):
     """Returns milliseconds elapsed since start_time"""

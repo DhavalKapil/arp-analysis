@@ -3,6 +3,9 @@ import sys
 import time
 from datetime import datetime
 import random
+
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as pp
 
 from lib import arp
