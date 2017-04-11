@@ -27,6 +27,8 @@ def main():
                                                  packet[ARP].hwsrc,
                                                  packet[ARP].psrc,
                                                  arp.ARP_REPLY)
+            print packet[ARP].hwsrc
+            print packet[ARP].psrc
             arp.send_arp_packet(reply_packet)
 
     arp.sniff_arp_packets(callback=packet_handler,

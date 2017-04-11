@@ -28,6 +28,7 @@ def main():
                     "src": packet[Ether].src,
                     },
                 "arp_header": {
+                    "type": "request" if packet[ARP].op == arp.ARP_REQUEST else "reply",
                     "source_mac": packet[ARP].hwsrc,
                     "source_ip": packet[ARP].psrc,
                     "dest_mac": packet[ARP].hwdst,
