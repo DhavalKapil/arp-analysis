@@ -21,7 +21,7 @@ def millis(start_time):
 
 def main():
     if len(sys.argv) != 3:
-        usage();
+        usage()
         sys.exit()
 
     interface = sys.argv[1]
