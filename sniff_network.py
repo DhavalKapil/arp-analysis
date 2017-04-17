@@ -21,7 +21,7 @@ def main():
     def packet_handler(packet):
         print(packet)
         packet_log.append({
-            "timestamp": int(round(time.time()*1000)),
+            "timestamp": "%0.20f" % time.time(),
             "packet": {
                 "eth_header": {
                     "dst": packet[Ether].dst,
