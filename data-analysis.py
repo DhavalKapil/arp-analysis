@@ -1,5 +1,10 @@
 import json
 import matplotlib.pyplot as plt
+import decimal
+
+D = decimal.Decimal
+
+timestampMultiplier = 1000
 
 with open('log.json') as data_file:
 	data = json.load(data_file)
@@ -15,6 +20,7 @@ def separateRequestsAndReplies():
 	requests = []
 	replies = []
 	for i, arpPacket in enumerate(data):
+		data[i]["timestamp"] = D(data[i]["timestamp"]) 
 		if arpPacket["packet"]["arp_header"]["type"] == "request":
 			requests.append(arpPacket)
 		else:
@@ -31,9 +37,9 @@ def findTimeDifferenceInRequestAndReply():
 			request_arp_header = requests[i]["packet"]["arp_header"]
 			reply_arp_header = replies[j]["packet"]["arp_header"]
 			if request_arp_header["dest_ip"] == reply_arp_header["source_ip"] and request_arp_header["source_mac"] == reply_arp_header["dest_mac"]:
-				# print reply_arp_header["source_ip"], reply_arp_header["source_mac"],request_arp_header["source_ip"], request_arp_header["source_mac"]
-				# print replies[j]["timestamp"] - requests[i]["timestamp"]
-				diff.append(requests[i], replies[j], replies[j]["timestamp"] - requests[i]["timestamp"])
+				print reply_arp_header["source_ip"], reply_arp_header["source_mac"],request_arp_header["source_ip"], request_arp_header["source_mac"]
+				print (replies[j]["timestamp"] - requests[i]["timestamp"])*timestampMultiplier
+				diff.append((requests[i], replies[j], (replies[j]["timestamp"] - requests[i]["timestamp"])*timestampMultiplier))
 				k = j + 1
 				break
 	return diff
@@ -47,7 +53,7 @@ def packetsPerMinute(packetList, filename):
 	j = 0
 	minute = 1
 	for i in xrange(1, len(packetList)):
-		if ((packetList[i]["timestamp"] - minuteStart)) >= 60:
+		if (packetList[i]["timestamp"] - minuteStart) >= 60:
 			# print "Minute Number ", minute, (i-j)
 			minutes.append(minute)
 			packetCount.append(i-j)
@@ -66,7 +72,7 @@ def countIpRequests(requests, ipType):
 	for i in xrange(0, len(requests)):
 		arp_header = requests[i]["packet"]["arp_header"]
 		if arp_header["source_ip"] != "0.0.0.0":
-			if listOfIPs.has_key(arp_header[ipType]):
+			if listOfIPs.has_key(arp_header[ipType]):	
 				listOfIPs[arp_header[ipType]]+=1
 			else:
 				listOfIPs[arp_header[ipType]] = 1
@@ -88,7 +94,7 @@ def countIpRequestsPerMinute(listOfIPs, requests, ipType):
 
 		minute = 1
 		for i in xrange(0, k):
-			if (requests[i]["timestamp"] - minuteStart)>=60:
+			if (requests[i]["timestamp"] - minuteStart) >= 60:
 				minutes.append(minute)
 				packetCount.append(0)
 				minuteStart = requests[i]["timestamp"]
@@ -113,15 +119,16 @@ def countIpRequestsPerMinute(listOfIPs, requests, ipType):
 # Requests and Replies
 (requests, replies) = separateRequestsAndReplies()
 
+findTimeDifferenceInRequestAndReply()
+
 # Number of packets received or sent in a minute
-packetsPerMinute(data, 'PacketsPerMinute.png')
+#packetsPerMinute(data, 'PacketsPerMinute.png')
 
 # Number of requests received in a minute
-packetsPerMinute(requests, 'RequestsPerMinute.png')
-
+#packetsPerMinute(requests, 'RequestsPerMinute.png')
 
 # Number of replies sent in a minute
-packetsPerMinute(replies, 'RepliesPerMinute.png')
+#packetsPerMinute(replies, 'RepliesPerMinute.png')
 
 # Number of times MAC Address for each IP is requested 
 # (ip, count)
@@ -130,12 +137,14 @@ listOfRequestedIPs = countIpRequests(requests, "dest_ip")
 # Number of times the host with an IP makes requests for other IPs 
 # (ip, count)
 listOfRequestingIPs = countIpRequests(requests, "source_ip")
+#print listOfRequestingIPs
 
 # Number of times MAC Address for each IP is requested per minute
 # (ip, list of minutes, list of count of requests in each minute)
-listOfNumberOfRequestsPerMinute = countIpRequestsPerMinute(listOfRequestedIPs, requests, "dest_ip")
+#listOfNumberOfRequestsPerMinute = countIpRequestsPerMinute(listOfRequestedIPs, requests, "dest_ip")
+#print listOfNumberOfRequestsPerMinute
 
 # Number of times the host with an IP makes requests for other IPs per minute
 # (ip, list of minutes, list of count of requests in each minute)
-listOfNumberOfRequestsMadePerMinute  = countIpRequestsPerMinute(listOfRequestingIPs, requests, "source_ip")
+#listOfNumberOfRequestsMadePerMinute  = countIpRequestsPerMinute(listOfRequestingIPs, requests, "source_ip")
 

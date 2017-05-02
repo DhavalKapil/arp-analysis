@@ -1,7 +1,6 @@
 from scapy.all import *
-
-ARP_REQUEST = ARP.who_has
-ARP_REPLY = ARP.is_at
+import netifaces
+import sys
 
 def create_arp_packet(src_mac,
                       src_ip,
@@ -11,7 +10,7 @@ def create_arp_packet(src_mac,
     # Creating ethernet packet structure
     ether = Ether()
     ether.dst = dest_mac
-    ether.src = "ac:16:2d:4b:8d:00"
+    ether.src = src_mac
     ether.type = 0x806 # ARP protocol
 
     # Creating arp packet structure
@@ -28,12 +27,21 @@ def create_arp_packet(src_mac,
 
     return ether/arp
 
-def send_arp_packet(packet):
-    sendp(packet)
+interface = sys.argv[1]
+dest_mac = sys.argv[2]
+dest_ip = sys.argv[3]
+packetCount = int(sys.argv[4])
 
-def sniff_arp_packets(callback,
-                      timeout):
-    sniff(prn=callback,
-          timeout=timeout,
-          filter="arp",
-          store=0)
+addresses = netifaces.ifaddresses(interface)
+src_mac = addresses[netifaces.AF_LINK][0]['addr']
+src_ip = addresses[netifaces.AF_INET][0]['addr']
+
+i = 0
+while i<packetCount:
+	packet = create_arp_packet(src_mac,
+                               src_ip,
+                               dest_mac,
+                               dest_ip,
+                               ARP.who_has) 
+	sendp(packet)
+	i+=1
