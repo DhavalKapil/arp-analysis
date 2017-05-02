@@ -26,6 +26,7 @@ def main():
     ip_mac_count = {}
 
     def packet_handler(packet):
+        print(packet[ARP].psrc)
         if packet[ARP].op == arp.ARP_REPLY and \
            packet[ARP].psrc == dest_ip:
             if packet[ARP].hwsrc in ip_mac_count:

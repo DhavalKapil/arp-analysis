@@ -49,6 +49,8 @@ def main():
         time.sleep(random.uniform(0, 2.0))
 
     pp.plot(timestamps, len(timestamps)*[1], "x")
+    pp.xlabel("Timestamps")
+    pp.ylabel("Packets sent count")
     pp.savefig('send_packets_output.png')
 
     print "%d packets send" % len(timestamps)

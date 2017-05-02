@@ -10,8 +10,10 @@ with open('log.json') as data_file:
 	data = json.load(data_file)
 
 # Plot a graph 
-def saveGraph(x, y, filename):
-	plt.plot(x, y, marker='o')
+def saveGraph(x, xlabel, y, ylabel, filename, marker='o',):
+	plt.plot(x, y, marker=marker)
+	plt.xlabel(xlabel)
+	plt.ylabel(ylabel)
 	plt.savefig(filename)
 	plt.show()
 	
@@ -47,6 +49,8 @@ def findTimeDifferenceInRequestAndReply():
 # Number of packets received or sent in a minute
 # params - packetList
 def packetsPerMinute(packetList, filename):
+	print("Packets count:")
+	print(len(packetList))
 	minutes = []
 	packetCount = []
 	minuteStart = data[0]["timestamp"]
@@ -61,13 +65,13 @@ def packetsPerMinute(packetList, filename):
 			j = i
 			minuteStart = packetList[i]["timestamp"]
 
-	saveGraph(minutes, packetCount, filename)
+	saveGraph(minutes, "Minutes", packetCount, "Packet count", filename)
 	#return (minutes, packetCount)
 
 # Return list of IPs for which request is received, along with no. of requests
 # Excluding RARP requests
 # ipType can be source or destination
-def countIpRequests(requests, ipType):
+def countIpRequests(requests, ipType, filename):
 	listOfIPs = {}
 	for i in xrange(0, len(requests)):
 		arp_header = requests[i]["packet"]["arp_header"]
@@ -76,6 +80,21 @@ def countIpRequests(requests, ipType):
 				listOfIPs[arp_header[ipType]]+=1
 			else:
 				listOfIPs[arp_header[ipType]] = 1
+
+	g_ips = range(0, 256)
+	g_count = [0] * 256
+	for key in listOfIPs.iteritems():
+		if not key[0].startswith("172"):
+			continue
+		ip = (int)(key[0].split(".")[3])
+		if ip==1:
+			print(key)
+		g_ips[ip] = ip
+		g_count[ip] = key[1]
+
+	print(g_ips)
+	print(g_count)
+	saveGraph(g_ips, "IP Addresses", g_count, "Packet count", filename, marker='.')
 	return listOfIPs
 
 # Number of requests per IP per Minute
@@ -125,26 +144,30 @@ findTimeDifferenceInRequestAndReply()
 #packetsPerMinute(data, 'PacketsPerMinute.png')
 
 # Number of requests received in a minute
-#packetsPerMinute(requests, 'RequestsPerMinute.png')
-
+packetsPerMinute(requests, 'RequestsPerMinute.png')
 # Number of replies sent in a minute
 #packetsPerMinute(replies, 'RepliesPerMinute.png')
 
 # Number of times MAC Address for each IP is requested 
 # (ip, count)
-listOfRequestedIPs = countIpRequests(requests, "dest_ip")
+listOfRequestedIPs = countIpRequests(requests, "dest_ip", "DestIpList.png")
+print(listOfRequestedIPs)
+print(len(listOfRequestedIPs))
 
 # Number of times the host with an IP makes requests for other IPs 
 # (ip, count)
-listOfRequestingIPs = countIpRequests(requests, "source_ip")
-#print listOfRequestingIPs
+listOfRequestingIPs = countIpRequests(requests, "source_ip", "SrcIpList.png")
+print(listOfRequestingIPs)
+print(len(listOfRequestingIPs))
 
 # Number of times MAC Address for each IP is requested per minute
 # (ip, list of minutes, list of count of requests in each minute)
-#listOfNumberOfRequestsPerMinute = countIpRequestsPerMinute(listOfRequestedIPs, requests, "dest_ip")
-#print listOfNumberOfRequestsPerMinute
+listOfNumberOfRequestsPerMinute = countIpRequestsPerMinute(listOfRequestedIPs, requests, "dest_ip")
+print(listOfNumberOfRequestsPerMinute)
+print(len(listOfNumberOfRequestsPerMinute))
 
 # Number of times the host with an IP makes requests for other IPs per minute
 # (ip, list of minutes, list of count of requests in each minute)
-#listOfNumberOfRequestsMadePerMinute  = countIpRequestsPerMinute(listOfRequestingIPs, requests, "source_ip")
-
+listOfNumberOfRequestsMadePerMinute  = countIpRequestsPerMinute(listOfRequestingIPs, requests, "source_ip")
+print(listOfNumberOfRequestsPerMinute)
+print(len(listOfNumberOfRequestsPerMinute))

@@ -42,6 +42,8 @@ def main():
                           timeout=seconds)
 
     pp.plot(timestamps, len(timestamps)*[1], "x")
+    pp.xlabel("Timestamps")
+    pp.ylabel("Packets receive count")
     pp.savefig('receive_packets_output.png')
 
     print "%d packets received" % len(timestamps)

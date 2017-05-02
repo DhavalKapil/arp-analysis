@@ -11,7 +11,7 @@ def create_arp_packet(src_mac,
     # Creating ethernet packet structure
     ether = Ether()
     ether.dst = dest_mac
-    ether.src = "ac:16:2d:4b:8d:00"
+    ether.src = "a4:5d:36:6b:62:31"
     ether.type = 0x806 # ARP protocol
 
     # Creating arp packet structure
